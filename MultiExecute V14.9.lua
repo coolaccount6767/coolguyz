@@ -3,24 +3,30 @@ local v = {n=false, r=false, f=false, s=60, j=50, b=1, a=false, blocker=false, t
 local bs = {Vector3.new(75,3,82), Vector3.new(75,3,41), Vector3.new(72,3,-1), Vector3.new(79,3,-42), Vector3.new(81,3,-79)}
 local m, u, r = p:GetMouse(), game:GetService("UserInputService"), game:GetService("RunService")
 
+-- UI Parent
 local target = (gethui and gethui()) or game:GetService("CoreGui")
 local sg = Instance.new("ScreenGui", target)
 
--- DESIGN: THEME ENGINE
+-- Themes Config
 local themes = {
     Hacker = {main = Color3.fromRGB(15, 15, 15), accent = Color3.fromRGB(0, 255, 150)},
     Blood = {main = Color3.fromRGB(15, 5, 5), accent = Color3.fromRGB(255, 0, 0)},
     Mystical = {main = Color3.fromRGB(10, 10, 45), accent = Color3.fromRGB(180, 0, 255)},
-    Water = {main = Color3.fromRGB(0, 30, 80), accent = Color3.fromRGB(255, 255, 255)} -- Blue Background, White Outline
+    Water = {main = Color3.fromRGB(0, 35, 90), accent = Color3.fromRGB(255, 255, 255)} -- Blue/White
 }
 local cur = themes.Hacker
 
--- DESIGN: MAIN FRAME
+-- Main Frame
 local f = Instance.new("Frame", sg)
 f.Size, f.Position, f.BackgroundColor3 = UDim2.new(0, 175, 0, 480), UDim2.new(0.5, -87, 0.5, -240), cur.main
 f.BorderSizePixel, f.BorderColor3, f.Visible, f.Active, f.Draggable = 2, cur.accent, false, true, true
 
--- TITLE & HUD
+-- Theme Window (Fixed Visibility)
+local tf = Instance.new("Frame", sg)
+tf.Size, tf.Position, tf.BackgroundColor3 = UDim2.new(0, 130, 0, 160), UDim2.new(0.5, 95, 0.5, -80), cur.main
+tf.BorderSizePixel, tf.BorderColor3, tf.Visible, tf.Active, tf.Draggable = 2, cur.accent, false, true, true
+tf.ZIndex = 5
+
 local l = Instance.new("TextLabel", f)
 l.Size, l.Text, l.TextColor3, l.BackgroundTransparency = UDim2.new(1, 0, 0, 25), "GEMINI PREMIUM", cur.accent, 1
 l.Font = Enum.Font.GothamBold
@@ -29,33 +35,28 @@ local hud = Instance.new("TextLabel", f)
 hud.Size, hud.Position = UDim2.new(1, 0, 0, 20), UDim2.new(0, 0, 0, 22)
 hud.TextSize, hud.TextColor3, hud.BackgroundTransparency = 10, Color3.new(0.8,0.8,0.8), 1
 
--- BUTTON CREATOR
+-- Button Helper
 local function nb(parent, t, y, cb, c)
     local b = Instance.new("TextButton", parent)
     b.Size, b.Position, b.Text = UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, y), t
     b.BackgroundColor3, b.TextColor3 = c or Color3.fromRGB(25, 25, 25), Color3.new(1, 1, 1)
-    b.BorderSizePixel = 0
-    b.Font = Enum.Font.Gotham
+    b.BorderSizePixel = 0; b.Font = Enum.Font.Gotham; b.ZIndex = parent.ZIndex + 1
     b.MouseButton1Click:Connect(function() cb(b) end) return b 
 end
 
--- STARTUP MENU
+-- Startup Menu
 local startF = Instance.new("Frame", sg)
 startF.Size, startF.Position, startF.BackgroundColor3 = UDim2.new(0, 190, 0, 240), UDim2.new(0.5, -95, 0.5, -120), cur.main
 startF.BorderSizePixel, startF.BorderColor3 = 2, cur.accent
 
-local st = Instance.new("TextLabel", startF)
-st.Size, st.Text, st.TextColor3, st.BackgroundTransparency = UDim2.new(1, 0, 0, 35), "CHOOSE BASE", cur.accent, 1
-
 for i=1, 5 do
-    nb(startF, "BASE "..i, 35 + (i*33), function()
-        v.b = i
-        if p.Character then p.Character:MoveTo(bs[i]) end
+    nb(startF, "BASE "..i, 40 + (i*33), function()
+        v.b = i; if p.Character then p.Character:MoveTo(bs[i]) end
         startF.Visible = false; f.Visible = true
     end)
 end
 
--- MAIN BUTTONS
+-- Main Buttons
 nb(f, "NOCLIP", 45, function(b) v.n = not v.n b.TextColor3 = v.n and Color3.new(0,1,0) or Color3.new(1,1,1) end)
 nb(f, "NOREACT", 71, function(b) v.r = not v.r b.TextColor3 = v.r and Color3.new(0,1,0) or Color3.new(1,1,1) end)
 nb(f, "FLY", 97, function(b) v.f = not v.f b.TextColor3 = v.f and Color3.new(0,1,0) or Color3.new(1,1,1) end)
@@ -73,16 +74,12 @@ end
 createReg(f, "Speed", 235, 60, "s")
 createReg(f, "Jump", 265, 50, "j")
 
--- TELEPORTS
 nb(f, "CELESTIAL", 300, function() if p.Character then p.Character:MoveTo(Vector3.new(2737, 3, -7)) end end)
 nb(f, "SECRET", 326, function() if p.Character then p.Character:MoveTo(Vector3.new(2461, 3, -2)) end end)
 nb(f, "COSMIC", 352, function() if p.Character then p.Character:MoveTo(Vector3.new(2005, 3, -9)) end end)
-nb(f, "THEMES", 390, function() tf.Visible = not tf.Visible end, Color3.fromRGB(60, 30, 80))
 
--- THEME WINDOW
-local tf = Instance.new("Frame", sg)
-tf.Size, tf.Position, tf.BackgroundColor3 = UDim2.new(0, 130, 0, 150), UDim2.new(0.5, 95, 0.5, -50), cur.main
-tf.BorderSizePixel, tf.BorderColor3, tf.Visible = 2, cur.accent, false
+-- Fixed Themes Toggle
+nb(f, "THEMES", 390, function() tf.Visible = not tf.Visible end, Color3.fromRGB(60, 30, 80))
 
 local function setT(name, y)
     nb(tf, name, y, function()
@@ -92,11 +89,12 @@ local function setT(name, y)
             frame.BorderColor3 = cur.accent
         end
         l.TextColor3 = cur.accent
+        tf.Visible = false -- Closes after pick
     end)
 end
-setT("Hacker", 10); setT("Blood", 40); setT("Mystical", 70); setT("Water", 100)
+setT("Hacker", 10); setT("Blood", 45); setT("Mystical", 80); setT("Water", 115)
 
--- AUTOGRAB (1 SEC)
+-- Core Logic (Autograb & Loops)
 u.InputBegan:Connect(function(input, gpe)
     if not gpe and input.KeyCode == Enum.KeyCode.E and v.ag then
         local holdStart = tick()
@@ -105,12 +103,11 @@ u.InputBegan:Connect(function(input, gpe)
                 if p.Character then p.Character:MoveTo(bs[v.b]) end
                 break
             end
-            task.wait(0.1)
+            task.wait(0.05)
         end
     end
 end)
 
--- CORE LOOP
 r.Stepped:Connect(function()
     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
         local hrp, hum = p.Character.HumanoidRootPart, p.Character.Humanoid
