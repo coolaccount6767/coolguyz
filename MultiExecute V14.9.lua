@@ -42,7 +42,7 @@ f.Visible, f.Active, f.Draggable = false, true, true
 applyStyle(f, 8)
 
 local l = Instance.new("TextLabel", f)
-l.Size, l.Text, l.BackgroundTransparency = UDim2.new(1, 0, 0, 35), ",MultiExecute", 1
+l.Size, l.Text, l.BackgroundTransparency = UDim2.new(1, 0, 0, 35), "GEMINI V3", 1
 l.Font, l.TextSize = Enum.Font.GothamBold, 16
 l.TextColor3 = cur.accent
 table.insert(allAccents, l)
